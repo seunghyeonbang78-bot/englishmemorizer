@@ -90,11 +90,12 @@ button{
 </div>
 
 <script>
+// =======================
+// 안정적인 localStorage 구조
+// =======================
 
-// ✅ 안전 초기 로딩
-if (!localStorage.getItem("words")) {
-    const defaultWords = [
-      {"english":"apex","korean":"정점, 최고점"},
+const defaultWords = [
+   {"english":"apex","korean":"정점, 최고점"},
   {"english":"atypical","korean":"전형적이지 않은, 이례적인"},
   {"english":"avenge","korean":"복수하다"},
   {"english":"coin","korean":"(새로운 단어나 표현을) 만들다"},
@@ -625,12 +626,15 @@ if (!localStorage.getItem("words")) {
   {"english":"static","korean":"정적인, 변화 없는"},
   {"english":"sustenance","korean":"생존에 필요한 음식, 생계"},
   {"english":"trifling","korean":"사소한, 하찮은"},
-    ];
+];
 
-    localStorage.setItem("words", JSON.stringify(defaultWords));
+// localStorage 로드 (안전하게)
+let words = JSON.parse(localStorage.getItem("words"));
+
+if (!Array.isArray(words) || words.length === 0) {
+    words = defaultWords;
+    localStorage.setItem("words", JSON.stringify(words));
 }
-
-let words = JSON.parse(localStorage.getItem("words") || "[]");
 
 function save(){
     localStorage.setItem("words", JSON.stringify(words));
@@ -640,7 +644,7 @@ function draw(){
     const list = document.getElementById("wordList");
     list.innerHTML = "";
 
-    words.forEach((word)=>{
+    words.forEach((word, index)=>{
         const div = document.createElement("div");
         div.className = "word";
 
@@ -649,7 +653,7 @@ function draw(){
             <div class="korean">${word.korean}</div>
         `;
 
-        div.onclick = function(){
+        div.onclick = () => {
             const meaning = div.querySelector(".korean");
             meaning.style.display =
                 meaning.style.display === "block" ? "none" : "block";
@@ -684,9 +688,8 @@ function deleteAll(){
     }
 }
 
-// 최초 렌더링
+// 최초 실행
 draw();
-
 </script>
 
 </body>
