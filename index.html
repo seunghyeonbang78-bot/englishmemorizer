@@ -91,11 +91,10 @@ button{
 
 <script>
 // =======================
-// 안정적인 localStorage 구조
+// 기본 단어 데이터
 // =======================
-
 const defaultWords = [
-   {"english":"apex","korean":"정점, 최고점"},
+      {"english":"apex","korean":"정점, 최고점"},
   {"english":"atypical","korean":"전형적이지 않은, 이례적인"},
   {"english":"avenge","korean":"복수하다"},
   {"english":"coin","korean":"(새로운 단어나 표현을) 만들다"},
@@ -628,23 +627,44 @@ const defaultWords = [
   {"english":"trifling","korean":"사소한, 하찮은"},
 ];
 
-// localStorage 로드 (안전하게)
-let words = JSON.parse(localStorage.getItem("words"));
+// =======================
+// localStorage 안전 로딩
+// =======================
+let words = [];
 
-if (!Array.isArray(words) || words.length === 0) {
-    words = defaultWords;
+const saved = localStorage.getItem("words");
+
+if (saved) {
+    try {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed)) {
+            words = parsed;
+        } else {
+            words = [...defaultWords];
+        }
+    } catch (e) {
+        words = [...defaultWords];
+    }
+} else {
+    words = [...defaultWords];
     localStorage.setItem("words", JSON.stringify(words));
 }
 
+// =======================
+// 저장
+// =======================
 function save(){
     localStorage.setItem("words", JSON.stringify(words));
 }
 
+// =======================
+// 화면 그리기
+// =======================
 function draw(){
     const list = document.getElementById("wordList");
     list.innerHTML = "";
 
-    words.forEach((word, index)=>{
+    words.forEach((word)=>{
         const div = document.createElement("div");
         div.className = "word";
 
@@ -654,25 +674,27 @@ function draw(){
         `;
 
         div.onclick = () => {
-            const meaning = div.querySelector(".korean");
-            meaning.style.display =
-                meaning.style.display === "block" ? "none" : "block";
+            const k = div.querySelector(".korean");
+            k.style.display = (k.style.display === "block") ? "none" : "block";
         };
 
         list.appendChild(div);
     });
 }
 
+// =======================
+// 단어 추가
+// =======================
 function addWord(){
-    const english = document.getElementById("english").value.trim();
-    const korean = document.getElementById("korean").value.trim();
+    const e = document.getElementById("english").value.trim();
+    const k = document.getElementById("korean").value.trim();
 
-    if(!english || !korean){
-        alert("둘 다 입력해야 됨");
+    if(!e || !k){
+        alert("영어랑 뜻 둘 다 입력해야 됨");
         return;
     }
 
-    words.push({english, korean});
+    words.push({english:e, korean:k});
     save();
     draw();
 
@@ -680,16 +702,20 @@ function addWord(){
     document.getElementById("korean").value = "";
 }
 
+// =======================
+// 전체 삭제
+// =======================
 function deleteAll(){
-    if(confirm("진짜 다 삭제?")){
+    if(confirm("진짜 다 삭제할거야?")){
         words = [];
         save();
         draw();
     }
 }
 
-// 최초 실행
+// 처음 실행
 draw();
+
 </script>
 
 </body>
