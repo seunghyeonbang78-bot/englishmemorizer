@@ -91,10 +91,10 @@ button{
 
 <script>
 
-// 🔥 초기 데이터 세팅
+// ✅ 안전 초기 로딩
 if (!localStorage.getItem("words")) {
     const defaultWords = [
-  {"english":"apex","korean":"정점, 최고점"},
+      {"english":"apex","korean":"정점, 최고점"},
   {"english":"atypical","korean":"전형적이지 않은, 이례적인"},
   {"english":"avenge","korean":"복수하다"},
   {"english":"coin","korean":"(새로운 단어나 표현을) 만들다"},
@@ -627,10 +627,14 @@ if (!localStorage.getItem("words")) {
   {"english":"trifling","korean":"사소한, 하찮은"},
     ];
 
+
+
+    ];
+
     localStorage.setItem("words", JSON.stringify(defaultWords));
 }
 
-let words = JSON.parse(localStorage.getItem("words"));
+let words = JSON.parse(localStorage.getItem("words") || "[]");
 
 function save(){
     localStorage.setItem("words", JSON.stringify(words));
@@ -684,6 +688,7 @@ function deleteAll(){
     }
 }
 
+// 최초 렌더링
 draw();
 
 </script>
